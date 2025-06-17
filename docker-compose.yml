@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: nestjs_db
+    env_file: .env  # Подгружаем переменные
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - nestjs_network
+
+  app:
+    build: .
+    container_name: nestjs_app
+    env_file: .env  # Подгружаем переменные
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - nestjs_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  nestjs_network:
+    driver: bridge
