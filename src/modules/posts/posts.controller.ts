@@ -8,7 +8,8 @@ import {
   Delete,
   UploadedFile,
   UseInterceptors,
-  Query
+  Query,
+  UseGuards
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -16,12 +17,14 @@ import { extname } from 'path';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { JwtAuthGuard } from '../auth/auth.guard';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   // ✅ Создание поста с загрузкой изображения
+  @UseGuards(JwtAuthGuard)
   @HttpPost()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -44,18 +47,21 @@ export class PostsController {
   }
 
   // ✅ Получить все посты
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
     return this.postsService.findAll(+page, +limit);
   }
 
   // ✅ Получить один пост по UUID
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
   }
 
   // ✅ Обновить пост (опционально с новым изображением)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -82,6 +88,7 @@ export class PostsController {
   }
 
   // ✅ Удалить пост
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.postsService.remove(id);
