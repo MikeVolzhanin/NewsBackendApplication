@@ -23,7 +23,6 @@ import { JwtAuthGuard } from '../auth/auth.guard';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  // ✅ Создание поста с загрузкой изображения
   @UseGuards(JwtAuthGuard)
   @HttpPost()
   @UseInterceptors(
@@ -46,21 +45,18 @@ export class PostsController {
     return this.postsService.create({ ...dto, imageUrl });
   }
 
-  // ✅ Получить все посты
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
     return this.postsService.findAll(+page, +limit);
   }
 
-  // ✅ Получить один пост по UUID
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
   }
 
-  // ✅ Обновить пост (опционально с новым изображением)
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @UseInterceptors(
@@ -87,7 +83,6 @@ export class PostsController {
     });
   }
 
-  // ✅ Удалить пост
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
